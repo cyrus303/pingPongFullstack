@@ -1,20 +1,31 @@
 import React, {useState} from 'react';
 
 const FormComponent = () => {
-  const [char, setChar] = useState('');
-  const URL = 'http://localhost:3001/api/characters/';
+  const [chara, setChara] = useState('');
+  const URL = 'http://localhost:3001/api/characters';
 
   const handleChange = (event) => {
-    setChar(event?.target.value);
+    setChara(event?.target.value);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setChar('');
-    console.log(char);
-    const response = await fetch(URL + char);
-    const data = await response.json();
-    console.log(data);
+    setChara('');
+
+    const response = await fetch(URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({char: chara}),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log(data);
+    } else {
+      console.error('Error:', response.status, response.statusText);
+    }
   };
 
   return (
@@ -23,7 +34,7 @@ const FormComponent = () => {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          value={char}
+          value={chara}
           onChange={handleChange}
           maxLength={1}
         />
