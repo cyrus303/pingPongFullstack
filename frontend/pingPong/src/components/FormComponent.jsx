@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import {useState, useContext} from 'react';
 import {CharContext} from '../context/context';
 
 const FormComponent = () => {
@@ -7,7 +7,12 @@ const FormComponent = () => {
   const {setKey} = useContext(CharContext);
 
   const handleChange = (event) => {
-    setCharacter(event?.target?.value);
+    const value = event?.target?.value;
+    const regex = /^[a-zA-Z]*$/;
+
+    if (regex.test(value) && value !== ' ') {
+      setCharacter(value);
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -15,16 +20,18 @@ const FormComponent = () => {
     setCharacter('');
     setKey((prev) => prev + 1);
 
-    const response = await fetch(URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({char: character}),
-    });
+    if (character.length > 0) {
+      const response = await fetch(URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({char: character}),
+      });
 
-    if (!response.ok) {
-      console.error('Error:', response.status, response.statusText);
+      if (!response.ok) {
+        console.error('Error:', response.status, response.statusText);
+      }
     }
   };
 
